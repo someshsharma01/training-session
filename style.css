@@ -1,0 +1,46 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family:Arial, Helvetica, sans-serif ;
+}
+
+:root{
+    --bg-dark : black;
+    --text-light : white;
+
+    --bg-light: white;
+    --text-dark: black;
+}
+body{
+    transition: 0.4s;
+}
+.dark{
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
+
+.light{
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+.container{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn{
+    background-color: rgb(143, 139, 139);
+    color: var(--text-dark);
+    padding: 10px 10px;
+    border: none;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+}

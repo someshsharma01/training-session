@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
+    margin:0;
+    padding:30px;
+    text-align:center;
+}
+
+h1{
+    color:white;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-top:30px;
+}
+
+.card{
+    background:white;
+    width:220px;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.2);
+    transition:transform 0.3s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+.city{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.temp{
+    font-size:32px;
+    margin:10px 0;
+}
+
+.condition{
+    color:#555;
+}
+
+.emoji{
+    font-size:40px;
+}
+
+.loader{
+    border:6px solid #f3f3f3;
+    border-top:6px solid #3498db;
+    border-radius:50%;
+    width:50px;
+    height:50px;
+    margin:30px auto;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+.hidden{
+    display:none;
+}
+
+.error{
+    color:red;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Weather Dashboard</h1>
+
+<div id="loader" class="loader"></div>
+
+<div id="error" class="error hidden">
+    Failed to fetch weather data
+</div>
+
+<div id="weather-container" class="container"></div>
+
+<script>
+    const container = document.getElementById("weather-container");
+const loader = document.getElementById("loader");
+const error = document.getElementById("error");
+
+const cities = [
+  { name: "Delhi", lat: 28.6139, lon: 77.2090 },
+  { name: "London", lat: 51.5072, lon: -0.1276 },
+  { name: "Tokyo", lat: 35.6762, lon: 139.6503 }
+];
+
+function getWeatherEmoji(code) {
+  if (code === 0) return "☀️";
+  if (code <= 3) return "⛅";
+  if (code <= 48) return "☁️";
+  if (code <= 67) return "🌧️";
+  if (code <= 77) return "❄️";
+  if (code <= 99) return "⛈️";
+  return "🌍";
+}
+
+function getWeatherCondition(code) {
+  if (code === 0) return "Clear sky";
+  if (code <= 3) return "Partly cloudy";
+  if (code <= 48) return "Cloudy";
+  if (code <= 67) return "Rain";
+  if (code <= 77) return "Snow";
+  if (code <= 99) return "Storm";
+  return "Unknown";
+}
+
+async function fetchWeather() {
+
+  loader.classList.remove("hidden");
+
+  try {
+
+    const requests = cities.map(city =>
+      fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true`
+      ).then(res => res.json())
+    );
+
+    const results = await Promise.all(requests);
+
+    loader.classList.add("hidden");
+
+    results.forEach((data, index) => {
+
+      const weather = data.current_weather;
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="city">${cities[index].name}</div>
+        <div class="emoji">${getWeatherEmoji(weather.weathercode)}</div>
+        <div class="temp">${weather.temperature}°C</div>
+        <div class="condition">${getWeatherCondition(weather.weathercode)}</div>
+      `;
+
+      container.appendChild(card);
+
+    });
+
+  } catch (err) {
+
+    loader.classList.add("hidden");
+    error.classList.remove("hidden");
+
+  }
+}
+
+fetchWeather();
+</script>
+</body>
+</html>

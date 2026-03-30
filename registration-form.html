@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:     #0b0c10;
+      --bg-card:     #13141a;
+      --bg-input:    #1a1b24;
+      --border:      #2a2b38;
+      --border-focus:#c9a96e;
+      --gold:        #c9a96e;
+      --gold-light:  #e8c98a;
+      --gold-dim:    rgba(201,169,110,0.15);
+      --text-primary:#f0ede8;
+      --text-muted:  #6b6d7e;
+      --text-label:  #9a9bb0;
+      --error:       #e05c6a;
+      --error-bg:    rgba(224,92,106,0.08);
+      --success:     #4eca8b;
+      --success-bg:  rgba(78,202,139,0.08);
+      --weak:        #e05c6a;
+      --medium:      #f0a050;
+      --strong:      #4eca8b;
+      --radius:      14px;
+      --shadow:      0 24px 64px rgba(0,0,0,0.6);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg-deep);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       BACKGROUND DECORATIVE ELEMENTS
+    ============================================= */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 20%, rgba(201,169,110,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 85% 80%, rgba(78,202,139,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-lines {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* =============================================
+       CARD WRAPPER
+    ============================================= */
+    .card {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 520px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 3rem 3rem 2.5rem;
+      box-shadow: var(--shadow);
+      animation: cardReveal 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+
+    /* Gold accent line at top */
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 0 0 4px 4px;
+    }
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    .card-header { text-align: center; margin-bottom: 2.4rem; }
+
+    .brand-icon {
+      width: 52px; height: 52px; margin: 0 auto 1.2rem;
+      border: 1.5px solid var(--gold);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      background: var(--gold-dim);
+      animation: iconPop 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes iconPop {
+      from { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .card-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+    }
+
+    .card-header h1 span { color: var(--gold); }
+
+    .card-header p {
+      margin-top: 0.5rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* =============================================
+       FORM GROUPS
+    ============================================= */
+    .form-grid { display: flex; flex-direction: column; gap: 1.3rem; }
+
+    .form-group { position: relative; }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-label);
+      margin-bottom: 0.55rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex; align-items: center;
+    }
+
+    .input-icon {
+      position: absolute; left: 14px;
+      font-size: 1rem; color: var(--text-muted);
+      pointer-events: none;
+      transition: color 0.2s;
+      z-index: 1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.82rem 2.8rem 0.82rem 2.8rem;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.93rem;
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    }
+
+    .form-input::placeholder { color: var(--text-muted); }
+
+    .form-input:focus {
+      border-color: var(--border-focus);
+      background: #1e1f2a;
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+
+    .form-input:focus ~ .input-icon,
+    .form-input:focus + .input-icon { color: var(--gold); }
+
+    /* Validity states */
+    .form-group.valid .form-input   { border-color: var(--success); }
+    .form-group.invalid .form-input { border-color: var(--error); }
+    .form-group.valid   .form-input:focus { box-shadow: 0 0 0 3px rgba(78,202,139,0.12); }
+    .form-group.invalid .form-input:focus { box-shadow: 0 0 0 3px rgba(224,92,106,0.12); }
+
+    /* Status icon on the right */
+    .status-icon {
+      position: absolute; right: 14px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .form-group.valid   .status-icon { opacity: 1; color: var(--success); }
+    .form-group.invalid .status-icon { opacity: 1; color: var(--error); }
+
+    /* Toggle password button */
+    .toggle-pw {
+      position: absolute; right: 14px;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 1rem;
+      transition: color 0.2s; padding: 0; z-index: 2;
+    }
+    .toggle-pw:hover { color: var(--gold); }
+
+    /* When toggle exists, shift status icon left */
+    .has-toggle .status-icon { right: 40px; }
+    .has-toggle .form-input  { padding-right: 4.4rem; }
+
+    /* =============================================
+       ERROR / HINT MESSAGES
+    ============================================= */
+    .field-message {
+      display: block;
+      font-size: 0.775rem;
+      margin-top: 0.38rem;
+      min-height: 1.1rem;
+      padding-left: 2px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .form-group.invalid .field-message { color: var(--error); }
+    .form-group.valid   .field-message { color: var(--success); }
+
+   
+    .strength-meter {
+      margin-top: 0.65rem;
+      display: none;
+    }
+
+    .strength-meter.visible { display: block; }
+
+    .strength-bars {
+      display: flex; gap: 5px; margin-bottom: 0.35rem;
+    }
+
+    .strength-bar {
+      flex: 1; height: 4px; border-radius: 99px;
+      background: var(--border);
+      transition: background 0.35s ease;
+    }
+
+    .strength-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+   
+    .strength-weak   .strength-bar:nth-child(1)                          { background: var(--weak); }
+    .strength-medium .strength-bar:nth-child(1),
+    .strength-medium .strength-bar:nth-child(2)                          { background: var(--medium); }
+    .strength-strong .strength-bar:nth-child(1),
+    .strength-strong .strength-bar:nth-child(2),
+    .strength-strong .strength-bar:nth-child(3)                          { background: var(--strong); }
+
+    .strength-weak   .strength-label { color: var(--weak); }
+    .strength-medium .strength-label { color: var(--medium); }
+    .strength-strong .strength-label { color: var(--strong); }
+
+ 
+    .submit-btn {
+      margin-top: 0.6rem;
+      width: 100%;
+      padding: 0.95rem;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      border: none; border-radius: var(--radius);
+      color: #0b0c10;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 8px 24px rgba(201,169,110,0.28);
+      position: relative; overflow: hidden;
+    }
+
+    .submit-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
+      border-radius: inherit;
+    }
+
+    .submit-btn:hover  { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 12px 32px rgba(201,169,110,0.38); }
+    .submit-btn:active { transform: translateY(0); }
+
+  
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1b2e22; border: 1px solid var(--success);
+      border-radius: 12px; padding: 1rem 1.6rem;
+      color: var(--success);
+      font-size: 0.88rem; font-weight: 500;
+      display: flex; align-items: center; gap: 0.6rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s, transform 0.4s;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+ 
+    .card-footer {
+      margin-top: 1.8rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1.4rem;
+    }
+
+    .card-footer a { color: var(--gold); text-decoration: none; font-weight: 500; }
+    .card-footer a:hover { text-decoration: underline; }
+
+
+    @media (max-width: 560px) {
+      .card { padding: 2.2rem 1.4rem 2rem; border-radius: 20px; }
+      .card-header h1 { font-size: 1.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+
+  <div class="grid-lines" aria-hidden="true"></div>
+
+
+  <div class="card" role="main">
+
+    <header class="card-header">
+      <div class="brand-icon" aria-hidden="true">✦</div>
+      <h1>Create an <span>Account</span></h1>
+      <p>Join us — it only takes a minute.</p>
+    </header>
+
+    <form id="registrationForm" novalidate autocomplete="off">
+      <div class="form-grid">
+
+        <div class="form-group" id="group-name">
+          <label class="form-label" for="fullName">Full Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">👤</span>
+            <input
+              class="form-input" type="text" id="fullName"
+              placeholder="Jane Doe" autocomplete="name"
+              aria-describedby="msg-name"
+            />
+            <span class="status-icon" aria-hidden="true" id="si-name"></span>
+          </div>
+          <span class="field-message" id="msg-name">Alphabets & spaces, min 3 characters.</span>
+        </div>
+
+        <div class="form-group" id="group-email">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">✉</span>
+            <input
+              class="form-input" type="email" id="email"
+              placeholder="jane@example.com" autocomplete="email"
+              aria-describedby="msg-email"
+            />
+            <span class="status-icon" aria-hidden="true" id="si-email"></span>
+          </div>
+          <span class="field-message" id="msg-email">Enter a valid email address.</span>
+        </div>
+
+        
+        <div class="form-group" id="group-phone">
+          <label class="form-label" for="phone">Phone Number</label>
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">📱</span>
+            <input
+              class="form-input" type="tel" id="phone"
+              placeholder="10-digit number" autocomplete="tel"
+              aria-describedby="msg-phone" maxlength="10"
+            />
+            <span class="status-icon" aria-hidden="true" id="si-phone"></span>
+          </div>
+          <span class="field-message" id="msg-phone">Exactly 10 digits, no spaces.</span>
+        </div>
+
+        <!-- ── Password ── -->
+        <div class="form-group" id="group-password">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper has-toggle">
+            <span class="input-icon" aria-hidden="true">🔒</span>
+            <input
+              class="form-input" type="password" id="password"
+              placeholder="Create a strong password"
+              aria-describedby="msg-password"
+            />
+            <span class="status-icon" aria-hidden="true" id="si-password"></span>
+            <button class="toggle-pw" type="button" data-target="password" aria-label="Toggle password visibility">👁</button>
+          </div>
+          <!-- Strength Meter -->
+          <div class="strength-meter" id="strengthMeter">
+            <div class="strength-bars">
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+            </div>
+            <span class="strength-label" id="strengthLabel">—</span>
+          </div>
+          <span class="field-message" id="msg-password">Min 8 chars, upper, lower, number & symbol.</span>
+        </div>
+
+        <!-- ── Confirm Password ── -->
+        <div class="form-group" id="group-confirm">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <div class="input-wrapper has-toggle">
+            <span class="input-icon" aria-hidden="true">🔑</span>
+            <input
+              class="form-input" type="password" id="confirmPassword"
+              placeholder="Repeat your password"
+              aria-describedby="msg-confirm"
+            />
+            <span class="status-icon" aria-hidden="true" id="si-confirm"></span>
+            <button class="toggle-pw" type="button" data-target="confirmPassword" aria-label="Toggle confirm password visibility">👁</button>
+          </div>
+          <span class="field-message" id="msg-confirm">Must match the password above.</span>
+        </div>
+
+        <!-- ── Submit ── -->
+        <button class="submit-btn" type="submit">Create Account →</button>
+
+      </div><!-- /.form-grid -->
+    </form>
+
+    <footer class="card-footer">
+      Already have an account? <a href="#">Sign in</a>
+    </footer>
+
+  </div><!-- /.card -->
+
+  <!-- Success Toast -->
+  <div class="toast" id="successToast" role="alert" aria-live="polite">
+    <span>✅</span>
+    <span>Account created successfully!</span>
+  </div>
+
+  <script>
+   
+    const form            = document.getElementById('registrationForm');
+    const inputName       = document.getElementById('fullName');
+    const inputEmail      = document.getElementById('email');
+    const inputPhone      = document.getElementById('phone');
+    const inputPassword   = document.getElementById('password');
+    const inputConfirm    = document.getElementById('confirmPassword');
+
+    const successToast    = document.getElementById('successToast');
+
+    const rules = {
+
+      name(value) {
+        const trimmed = value.trim();
+        if (!trimmed)                        return { valid: false, message: 'Full name is required.' };
+        if (trimmed.length < 3)              return { valid: false, message: 'Name must be at least 3 characters.' };
+        if (!/^[A-Za-z\s]+$/.test(trimmed)) return { valid: false, message: 'Only alphabets and spaces allowed.' };
+        return { valid: true,  message: 'Looks good!' };
+      },
+
+      /**
+       * Email: standard RFC-style format check via regex.
+       */
+      email(value) {
+        const trimmed = value.trim();
+        if (!trimmed) return { valid: false, message: 'Email address is required.' };
+        // Standard email regex — covers most valid formats
+        const emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!emailRE.test(trimmed)) return { valid: false, message: 'Enter a valid email (e.g. user@domain.com).' };
+        return { valid: true, message: 'Valid email address.' };
+      },
+
+     
+      phone(value) {
+        const trimmed = value.trim();
+        if (!trimmed)                  return { valid: false, message: 'Phone number is required.' };
+        if (!/^\d+$/.test(trimmed))    return { valid: false, message: 'Only numeric digits allowed.' };
+        if (trimmed.length !== 10)     return { valid: false, message: `Must be exactly 10 digits (${trimmed.length} entered).` };
+        return { valid: true, message: 'Valid phone number.' };
+      },
+
+      
+      password(value) {
+        if (!value)              return { valid: false, message: 'Password is required.' };
+        if (value.length < 8)   return { valid: false, message: 'Must be at least 8 characters.' };
+        if (!/[A-Z]/.test(value)) return { valid: false, message: 'Add at least one uppercase letter.' };
+        if (!/[a-z]/.test(value)) return { valid: false, message: 'Add at least one lowercase letter.' };
+        if (!/[0-9]/.test(value)) return { valid: false, message: 'Add at least one number.' };
+        if (!/[^A-Za-z0-9]/.test(value)) return { valid: false, message: 'Add at least one special character (!@#$…).' };
+        return { valid: true, message: 'Strong password!' };
+      },
+
+      
+      confirm(value) {
+        if (!value) return { valid: false, message: 'Please confirm your password.' };
+        if (value !== inputPassword.value) return { valid: false, message: 'Passwords do not match.' };
+        return { valid: true, message: 'Passwords match!' };
+      },
+    };
+
+    
+    function setFieldState(groupId, isValid, message, siId) {
+      const group = document.getElementById(groupId);
+      const msg   = group.querySelector('.field-message');
+      const si    = document.getElementById(siId);
+
+      // Toggle CSS classes
+      group.classList.toggle('valid',   isValid);
+      group.classList.toggle('invalid', !isValid);
+
+      // Update text feedback
+      msg.textContent = message;
+
+      // Update status icon
+      si.textContent = isValid ? '✓' : '✕';
+    }
+
+    
+    function clearFieldState(groupId, defaultMsg, siId) {
+      const group = document.getElementById(groupId);
+      const msg   = group.querySelector('.field-message');
+      const si    = document.getElementById(siId);
+
+      group.classList.remove('valid', 'invalid');
+      msg.textContent = defaultMsg;
+      si.textContent  = '';
+    }
+
+    
+    inputName.addEventListener('input', () => {
+      const result = rules.name(inputName.value);
+      setFieldState('group-name', result.valid, result.message, 'si-name');
+    });
+
+    // Email
+    inputEmail.addEventListener('input', () => {
+      const result = rules.email(inputEmail.value);
+      setFieldState('group-email', result.valid, result.message, 'si-email');
+    });
+
+    // Phone — restrict to digits while typing
+    inputPhone.addEventListener('input', () => {
+      // Auto-strip non-numeric characters as user types
+      inputPhone.value = inputPhone.value.replace(/\D/g, '');
+      const result = rules.phone(inputPhone.value);
+      setFieldState('group-phone', result.valid, result.message, 'si-phone');
+    });
+
+    // Password — validate AND update strength meter
+    inputPassword.addEventListener('input', () => {
+      const result = rules.password(inputPassword.value);
+      setFieldState('group-password', result.valid, result.message, 'si-password');
+      updateStrengthMeter(inputPassword.value);
+
+      // Re-validate confirm field if it has content
+      if (inputConfirm.value) {
+        const cr = rules.confirm(inputConfirm.value);
+        setFieldState('group-confirm', cr.valid, cr.message, 'si-confirm');
+      }
+    });
+
+    // Confirm Password
+    inputConfirm.addEventListener('input', () => {
+      const result = rules.confirm(inputConfirm.value);
+      setFieldState('group-confirm', result.valid, result.message, 'si-confirm');
+    });
+
+   
+    function updateStrengthMeter(pw) {
+      const meter = document.getElementById('strengthMeter');
+      const label = document.getElementById('strengthLabel');
+
+      if (!pw) {
+        meter.classList.remove('visible', 'strength-weak', 'strength-medium', 'strength-strong');
+        return;
+      }
+
+      meter.classList.add('visible');
+
+      // Calculate score
+      let score = 0;
+      if (pw.length >= 8)             score++;
+      if (pw.length >= 12)            score++;   // extra length bonus
+      if (/[A-Z]/.test(pw))           score++;
+      if (/[a-z]/.test(pw))           score++;
+      if (/[0-9]/.test(pw))           score++;
+      if (/[^A-Za-z0-9]/.test(pw))    score++;
+
+      // Clear old strength classes
+      meter.classList.remove('strength-weak', 'strength-medium', 'strength-strong');
+
+      if (score <= 2) {
+        meter.classList.add('strength-weak');
+        label.textContent = 'Weak';
+      } else if (score <= 4) {
+        meter.classList.add('strength-medium');
+        label.textContent = 'Medium';
+      } else {
+        meter.classList.add('strength-strong');
+        label.textContent = 'Strong';
+      }
+    }
+
+   
+    document.querySelectorAll('.toggle-pw').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const inputEl  = document.getElementById(targetId);
+
+        if (inputEl.type === 'password') {
+          inputEl.type  = 'text';
+          btn.textContent = '🙈';   // visually "hidden"
+          btn.setAttribute('aria-label', 'Hide password');
+        } else {
+          inputEl.type  = 'password';
+          btn.textContent = '👁';
+          btn.setAttribute('aria-label', 'Show password');
+        }
+      });
+    });
+
+  
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();   // prevent native browser submission
+
+      // Run all rules and collect results
+      const checks = {
+        name:    { result: rules.name(inputName.value),         groupId: 'group-name',     siId: 'si-name'     },
+        email:   { result: rules.email(inputEmail.value),       groupId: 'group-email',    siId: 'si-email'    },
+        phone:   { result: rules.phone(inputPhone.value),       groupId: 'group-phone',    siId: 'si-phone'    },
+        password:{ result: rules.password(inputPassword.value), groupId: 'group-password', siId: 'si-password' },
+        confirm: { result: rules.confirm(inputConfirm.value),   groupId: 'group-confirm',  siId: 'si-confirm'  },
+      };
+
+      // Apply all states
+      let allValid = true;
+      for (const key in checks) {
+        const { result, groupId, siId } = checks[key];
+        setFieldState(groupId, result.valid, result.message, siId);
+        if (!result.valid) allValid = false;
+      }
+
+      if (!allValid) {
+        // Scroll to the first invalid field
+        const firstInvalid = form.querySelector('.form-group.invalid .form-input');
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+     
+      const submission = {
+        id:        Date.now(),
+        fullName:  inputName.value.trim(),
+        email:     inputEmail.value.trim().toLowerCase(),
+        phone:     inputPhone.value.trim(),
+        // NOTE: Storing passwords in localStorage is insecure in production.
+        //       This is for demo purposes only.
+        password:  inputPassword.value,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Load existing submissions array from localStorage (or create a new one)
+      const existing = JSON.parse(localStorage.getItem('submissions') || '[]');
+      existing.push(submission);
+      localStorage.setItem('submissions', JSON.stringify(existing));
+
+      // Debug: print all submissions to the console
+      console.group('📋 Stored Submissions');
+      console.table(existing.map(s => ({ ...s, password: '••••••••' }))); // mask passwords in log
+      console.groupEnd();
+
+      // Reset form and field states
+      form.reset();
+      ['group-name','group-email','group-phone','group-password','group-confirm'].forEach(id => {
+        const g = document.getElementById(id);
+        g.classList.remove('valid', 'invalid');
+      });
+      document.querySelectorAll('.status-icon').forEach(si => si.textContent = '');
+      document.querySelectorAll('.field-message').forEach(msg => {
+        // Restore default hint messages
+        const hints = {
+          'msg-name':     'Alphabets & spaces, min 3 characters.',
+          'msg-email':    'Enter a valid email address.',
+          'msg-phone':    'Exactly 10 digits, no spaces.',
+          'msg-password': 'Min 8 chars, upper, lower, number & symbol.',
+          'msg-confirm':  'Must match the password above.',
+        };
+        if (hints[msg.id]) msg.textContent = hints[msg.id];
+      });
+
+      // Hide strength meter
+      document.getElementById('strengthMeter').classList.remove('visible','strength-weak','strength-medium','strength-strong');
+
+      // Show success toast
+      showToast();
+    });
+
+   
+    function showToast() {
+      successToast.classList.add('show');
+      setTimeout(() => successToast.classList.remove('show'), 3500);
+    }
+
+  </script>
+</body>
+</html>
