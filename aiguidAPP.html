@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dharma — Hindu Philosophy Oracle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+Devanagari:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --saffron: #FF6B00;
+    --deep-saffron: #E05000;
+    --gold: #C8900A;
+    --gold-light: #F0C040;
+    --cream: #FDF6E8;
+    --parchment: #F5E6C8;
+    --dark-brown: #1A0800;
+    --warm-black: #120500;
+    --maroon: #5C1010;
+    --lotus-pink: #D4607A;
+    --sacred-blue: #1A3A5C;
+    --text-dark: #2C1005;
+    --text-mid: #6B3A1F;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    background: var(--warm-black);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === MANDALA BACKGROUND === */
+  .mandala-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .mandala-bg::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 900px; height: 900px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse at center,
+      rgba(200,144,10,0.06) 0%,
+      rgba(255,107,0,0.04) 30%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    animation: pulse-glow 8s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%,100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%,-50%) scale(1.08); }
+  }
+
+  /* SVG mandala overlay */
+  .mandala-svg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 700px; height: 700px;
+    opacity: 0.04;
+    animation: rotate-slow 120s linear infinite;
+  }
+  @keyframes rotate-slow { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  /* === LAYOUT === */
+  .wrapper {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* === HEADER === */
+  header {
+    text-align: center;
+    padding: 40px 20px 28px;
+    position: relative;
+  }
+  .om-symbol {
+    font-size: 2.8rem;
+    color: var(--gold-light);
+    display: block;
+    margin-bottom: 6px;
+    animation: om-glow 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(200,144,10,0.6));
+  }
+  @keyframes om-glow {
+    0%,100% { filter: drop-shadow(0 0 8px rgba(200,144,10,0.5)); }
+    50% { filter: drop-shadow(0 0 22px rgba(255,107,0,0.9)); }
+  }
+  .site-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--saffron) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.15;
+  }
+  .site-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(253,246,232,0.55);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .header-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .header-divider span { color: var(--gold); font-size: 1.2rem; }
+  .divider-line {
+    height: 1px;
+    width: 80px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  /* === SCRIPTURE BADGES === */
+  .scriptures-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0 8px;
+  }
+  .scripture-badge {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border: 1px solid rgba(200,144,10,0.3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(200,144,10,0.07);
+  }
+
+  /* === CHAT CONTAINER === */
+  .chat-outer {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0;
+  }
+
+  #chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0 20px;
+    min-height: 340px;
+  }
+
+  /* === WELCOME STATE === */
+  .welcome-card {
+    text-align: center;
+    padding: 40px 30px;
+    background: rgba(200,144,10,0.05);
+    border: 1px solid rgba(200,144,10,0.15);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .welcome-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+  }
+  .welcome-text {
+    font-style: italic;
+    color: rgba(253,246,232,0.7);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 500px;
+    margin: 0 auto 20px;
+  }
+  .sample-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .sample-q {
+    background: rgba(255,107,0,0.08);
+    border: 1px solid rgba(255,107,0,0.2);
+    padding: 10px 16px;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    color: rgba(253,246,232,0.8);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s;
+    font-style: italic;
+  }
+  .sample-q:hover {
+    background: rgba(255,107,0,0.15);
+    border-color: var(--saffron);
+    color: var(--cream);
+    transform: translateX(4px);
+  }
+
+  /* === MESSAGE BUBBLES === */
+  .msg {
+    display: flex;
+    gap: 14px;
+    animation: msg-in 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes msg-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .avatar.scholar {
+    background: linear-gradient(135deg, #3D1A00, #7A3800);
+    border: 1.5px solid var(--gold);
+    box-shadow: 0 0 12px rgba(200,144,10,0.3);
+  }
+  .avatar.user-av {
+    background: rgba(255,107,0,0.15);
+    border: 1.5px solid rgba(255,107,0,0.4);
+  }
+
+  .bubble {
+    max-width: 75%;
+    padding: 16px 20px;
+    border-radius: 2px;
+    position: relative;
+    line-height: 1.75;
+    font-size: 0.97rem;
+  }
+  .bubble.scholar-bubble {
+    background: rgba(26,8,0,0.7);
+    border: 1px solid rgba(200,144,10,0.25);
+    border-left: 3px solid var(--gold);
+    backdrop-filter: blur(10px);
+  }
+  .bubble.scholar-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+  }
+  .bubble.user-bubble {
+    background: rgba(255,107,0,0.12);
+    border: 1px solid rgba(255,107,0,0.25);
+    border-right: 3px solid var(--saffron);
+    color: rgba(253,246,232,0.9);
+  }
+
+  /* === RICH ANSWER FORMATTING === */
+  .answer-section { margin: 12px 0 0; }
+  .answer-section:first-child { margin-top: 0; }
+
+  .section-label {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(200,144,10,0.3), transparent);
+  }
+
+  .verse-block {
+    background: rgba(200,144,10,0.07);
+    border-left: 2px solid var(--gold);
+    padding: 10px 14px;
+    margin: 6px 0;
+    font-style: italic;
+    color: var(--gold-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .meaning-block {
+    color: rgba(253,246,232,0.88);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .guidance-block {
+    background: rgba(255,107,0,0.07);
+    border: 1px solid rgba(255,107,0,0.15);
+    padding: 10px 14px;
+    margin-top: 6px;
+    font-size: 0.93rem;
+    color: rgba(253,246,232,0.82);
+    line-height: 1.7;
+  }
+
+  /* === TYPING INDICATOR === */
+  .typing-dots {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 4px;
+  }
+  .typing-dots span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: dot-bounce 1.4s ease-in-out infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-bounce {
+    0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  /* === INPUT AREA === */
+  .input-area {
+    padding: 20px 0 36px;
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, var(--warm-black) 80%, transparent);
+  }
+  .input-row {
+    display: flex;
+    gap: 0;
+    border: 1px solid rgba(200,144,10,0.35);
+    border-radius: 3px;
+    overflow: hidden;
+    background: rgba(26,8,0,0.85);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,144,10,0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .input-row:focus-within {
+    border-color: rgba(200,144,10,0.7);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(200,144,10,0.12);
+  }
+  #question-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    padding: 16px 20px;
+    resize: none;
+    min-height: 60px;
+    max-height: 140px;
+    line-height: 1.5;
+  }
+  #question-input::placeholder {
+    color: rgba(253,246,232,0.3);
+    font-style: italic;
+  }
+  .send-btn {
+    background: linear-gradient(135deg, var(--saffron), var(--deep-saffron));
+    border: none;
+    cursor: pointer;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: white;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    min-width: 80px;
+  }
+  .send-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #FF8C30, var(--saffron));
+    box-shadow: 0 0 20px rgba(255,107,0,0.4);
+  }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .send-btn svg { width: 18px; height: 18px; }
+
+  /* === FOOTER === */
+  footer {
+    text-align: center;
+    padding: 0 0 20px;
+    font-size: 0.72rem;
+    color: rgba(253,246,232,0.25);
+    letter-spacing: 0.1em;
+  }
+
+  /* Error state */
+  .error-msg {
+    color: #FF6B6B;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(200,144,10,0.3); border-radius: 2px; }
+
+  @media (max-width: 600px) {
+    .bubble { max-width: 88%; }
+    .site-title { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Mandala Background -->
+<div class="mandala-bg">
+  <svg class="mandala-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white">
+    <circle cx="250" cy="250" r="240" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="200" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="160" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="120" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="80" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="40" stroke-width="0.5"/>
+    <!-- 12 petals -->
+    <g transform="translate(250,250)">
+      <ellipse rx="20" ry="100" transform="rotate(0)" stroke-width="0.5"/>
+      <ellipse rx="20" ry="100" transform="rotate(30)" stroke-width="0.5"/>
+      <ellipse rx="20" ry="100" transform="rotate(60)" stroke-width="0.5"/>
+      <ellipse rx="20" ry="100" transform="rotate(90)" stroke-width="0.5"/>
+      <ellipse rx="20" ry="100" transform="rotate(120)" stroke-width="0.5"/>
+      <ellipse rx="20" ry="100" transform="rotate(150)" stroke-width="0.5"/>
+      <!-- Outer petals -->
+      <ellipse rx="12" ry="180" transform="rotate(15)" stroke-width="0.3" opacity="0.5"/>
+      <ellipse rx="12" ry="180" transform="rotate(45)" stroke-width="0.3" opacity="0.5"/>
+      <ellipse rx="12" ry="180" transform="rotate(75)" stroke-width="0.3" opacity="0.5"/>
+      <ellipse rx="12" ry="180" transform="rotate(105)" stroke-width="0.3" opacity="0.5"/>
+      <ellipse rx="12" ry="180" transform="rotate(135)" stroke-width="0.3" opacity="0.5"/>
+      <ellipse rx="12" ry="180" transform="rotate(165)" stroke-width="0.3" opacity="0.5"/>
+      <!-- Star of David lines -->
+      <line x1="-230" y1="0" x2="230" y2="0" stroke-width="0.3" opacity="0.4"/>
+      <line x1="-115" y1="-199" x2="115" y2="199" stroke-width="0.3" opacity="0.4"/>
+      <line x1="115" y1="-199" x2="-115" y2="199" stroke-width="0.3" opacity="0.4"/>
+    </g>
+  </svg>
+</div>
+
+<div class="wrapper">
+  <!-- HEADER -->
+  <header>
+    <span class="om-symbol">ॐ</span>
+    <h1 class="site-title">Dharma Oracle</h1>
+    <p class="site-subtitle">Wisdom of the Ancient Scriptures</p>
+    <div class="header-divider">
+      <div class="divider-line"></div>
+      <span>❋</span>
+      <div class="divider-line"></div>
+    </div>
+    <div class="scriptures-row">
+      <span class="scripture-badge">Bhagavad Gita</span>
+      <span class="scripture-badge">Upanishads</span>
+      <span class="scripture-badge">Vedas</span>
+      <span class="scripture-badge">Ramayana</span>
+      <span class="scripture-badge">Mahabharata</span>
+    </div>
+  </header>
+
+  <!-- CHAT -->
+  <div class="chat-outer">
+    <div id="chat-messages">
+      <!-- Welcome Card -->
+      <div class="welcome-card" id="welcome-card">
+        <div class="welcome-title">Seek the Ancient Wisdom</div>
+        <p class="welcome-text">
+          Ask any question about life, dharma, purpose, karma, or the nature of the Self — and receive guidance rooted in the timeless teachings of the Hindu scriptures.
+        </p>
+        <div class="sample-questions">
+          <div class="sample-q" onclick="askSample(this)">What is the meaning of karma and how does it affect my life?</div>
+          <div class="sample-q" onclick="askSample(this)">How should I deal with grief and loss according to the scriptures?</div>
+          <div class="sample-q" onclick="askSample(this)">What is the purpose of human life in Hindu philosophy?</div>
+          <div class="sample-q" onclick="askSample(this)">How can I find inner peace amid chaos and anxiety?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="input-area">
+      <div class="input-row">
+        <textarea
+          id="question-input"
+          placeholder="Ask your question, seeker…"
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendQuestion()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ॐ तत् सत् · Powered by Claude AI · For spiritual inquiry & reflection
+  </footer>
+</div>
+
+<script>
+const API_URL = "https://api.anthropic.com/v1/messages";
+let isLoading = false;
+
+const SYSTEM_PROMPT = `You are a deeply knowledgeable and compassionate scholar of Hindu philosophy with mastery over all major scriptures including the Bhagavad Gita, Upanishads (especially Brihadaranyaka, Chandogya, Mandukya, Katha, Isha), the four Vedas, Ramayana, Mahabharata, Puranas, and Dharmashastra.
+
+Your task is to answer the user's spiritual and philosophical questions using wisdom from these authentic Hindu scriptures.
+
+Instructions:
+1. Answer using teachings drawn directly from relevant Hindu scriptures.
+2. Quote or paraphrase relevant verses, always citing the specific text and chapter/verse when possible (e.g., Bhagavad Gita 2.47, Katha Upanishad 1.2.18).
+3. Explain the meaning clearly in simple, warm, modern English so it is easy to understand.
+4. Make the guidance practical — show how the person can apply this teaching in their daily life.
+5. If multiple perspectives exist within Hindu philosophy (e.g., Advaita vs Dvaita, different schools), briefly acknowledge them when relevant.
+
+ALWAYS format your response using these EXACT HTML section markers so I can parse and display them beautifully:
+
+<VERSE>
+[The relevant verse, quote, or scriptural reference goes here — in Sanskrit transliteration if known, followed by English translation]
+</VERSE>
+
+<MEANING>
+[Explain what this verse or teaching means — its deeper philosophical significance in clear, accessible language]
+</MEANING>
+
+<GUIDANCE>
+[Give 2-4 practical, actionable ways the person can apply this wisdom in their daily life and challenges]
+</GUIDANCE>
+
+Keep a warm, wise, reverent but approachable tone — like a beloved teacher sharing ancient wisdom by firelight.`;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendQuestion();
+  }
+}
+
+function askSample(el) {
+  document.getElementById('question-input').value = el.textContent;
+  autoResize(document.getElementById('question-input'));
+  sendQuestion();
+}
+
+function appendMessage(type, content) {
+  const container = document.getElementById('chat-messages');
+
+  // Hide welcome card on first message
+  const welcome = document.getElementById('welcome-card');
+  if (welcome) welcome.style.display = 'none';
+
+  const msg = document.createElement('div');
+  msg.classList.add('msg', type);
+
+  const avatarEmoji = type === 'user' ? '🙏' : '📿';
+  const avatarClass = type === 'user' ? 'user-av' : 'scholar';
+  const bubbleClass = type === 'user' ? 'user-bubble' : 'scholar-bubble';
+
+  msg.innerHTML = `
+    <div class="avatar ${avatarClass}">${avatarEmoji}</div>
+    <div class="bubble ${bubbleClass}">${content}</div>
+  `;
+  container.appendChild(msg);
+  msg.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return msg;
+}
+
+function addTypingIndicator() {
+  const container = document.getElementById('chat-messages');
+  const msg = document.createElement('div');
+  msg.classList.add('msg');
+  msg.id = 'typing-indicator';
+  msg.innerHTML = `
+    <div class="avatar scholar">📿</div>
+    <div class="bubble scholar-bubble">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+  `;
+  container.appendChild(msg);
+  msg.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function formatAnswer(raw) {
+  const verseMatch = raw.match(/<VERSE>([\s\S]*?)<\/VERSE>/i);
+  const meaningMatch = raw.match(/<MEANING>([\s\S]*?)<\/MEANING>/i);
+  const guidanceMatch = raw.match(/<GUIDANCE>([\s\S]*?)<\/GUIDANCE>/i);
+
+  if (!verseMatch && !meaningMatch && !guidanceMatch) {
+    // Fallback: just show raw text nicely
+    return `<div class="meaning-block">${raw.replace(/\n/g, '<br>')}</div>`;
+  }
+
+  let html = '';
+
+  if (verseMatch) {
+    html += `
+      <div class="answer-section">
+        <div class="section-label">✦ Scripture</div>
+        <div class="verse-block">${verseMatch[1].trim().replace(/\n/g, '<br>')}</div>
+      </div>`;
+  }
+
+  if (meaningMatch) {
+    html += `
+      <div class="answer-section">
+        <div class="section-label">✦ Meaning</div>
+        <div class="meaning-block">${meaningMatch[1].trim().replace(/\n/g, '<br>')}</div>
+      </div>`;
+  }
+
+  if (guidanceMatch) {
+    html += `
+      <div class="answer-section">
+        <div class="section-label">✦ Practical Guidance</div>
+        <div class="guidance-block">${guidanceMatch[1].trim().replace(/\n/g, '<br>')}</div>
+      </div>`;
+  }
+
+  return html;
+}
+
+async function sendQuestion() {
+  if (isLoading) return;
+  const input = document.getElementById('question-input');
+  const question = input.value.trim();
+  if (!question) return;
+
+  isLoading = true;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+
+  appendMessage('user', `<em>"${question}"</em>`);
+  addTypingIndicator();
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: question }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.error) throw new Error(data.error.message || 'API error');
+
+    const raw = data.content?.[0]?.text || '';
+    removeTypingIndicator();
+    appendMessage('scholar', formatAnswer(raw));
+
+  } catch (err) {
+    removeTypingIndicator();
+    appendMessage('scholar', `<span class="error-msg">⚠ The path to wisdom encountered an obstacle: ${err.message}. Please try again, seeker.</span>`);
+  } finally {
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+    input.focus();
+  }
+}
+</script>
+</body>
+</html>
